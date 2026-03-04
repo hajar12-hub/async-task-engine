@@ -216,19 +216,3 @@ src/main/java/com/tread/
 
 ---
 
-##  Roadmap
-
-- [ ] Priority-based queue (`PriorityBlockingQueue`)
-- [ ] Task retry mechanism on failure
-- [ ] Redis cache for task results
-- [ ] Spring Security with JWT
-- [ ] Actuator + Micrometer metrics
-- [ ] Docker support
-
----
-
-## 👤 Author
-
-Built as part of a hands-on **Backend & Scalable Systems** learning path.
-
-> *"Don't just learn threads — build systems that prove you understand them."*

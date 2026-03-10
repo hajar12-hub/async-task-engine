@@ -10,6 +10,8 @@ import com.tread.service.ExecutorService;
 import com.tread.service.TaskService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
+    @CacheEvict(value = "tasks", allEntries = true)
     public Task submitTask(Task task) {
         task.setStatus(TaskStatus.PENDING);
         task.setSubmittedAt(LocalDateTime.now());
@@ -43,17 +46,20 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Cacheable(value = "tasks", key = "#taskId")
     public Task findById(Long taskId) {
         return taskRepository.findById(taskId)
                 .orElseThrow(()->  new TaskNotFoundException("Task with id " + taskId + " not found"));
     }
 
     @Override
+    @Cacheable("tasks")
     public List<Task> findAll() {
         return taskRepository.findAll();
     }
 
     @Override
+    @CacheEvict(value = "tasks", key = "#taskId")
     public Task updateStatus(Long taskId, TaskStatus status) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id " + taskId + " not found"));

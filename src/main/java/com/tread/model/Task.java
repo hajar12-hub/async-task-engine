@@ -7,12 +7,13 @@ import com.tread.model.enums.TaskType;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
 @Table(name = "tasks")
-public class Task {
+public class Task implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

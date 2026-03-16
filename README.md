@@ -1,4 +1,4 @@
-# ⚙️ AsyncTaskEngine — Concurrent Task Processing System
+#  AsyncTaskEngine — Concurrent Task Processing System
 
 ![Java](https://img.shields.io/badge/Java-17-orange?style=flat-square)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.3-brightgreen?style=flat-square)
@@ -9,7 +9,7 @@ A backend system for managing and executing **heavy tasks in parallel** using a 
 
 ---
 
-## 🎯 Purpose
+##  Purpose
 
 Most applications block the main thread when executing long operations (file processing, emails, scraping). AsyncTaskEngine solves this by delegating tasks to a managed thread pool, enabling:
 
@@ -19,7 +19,7 @@ Most applications block the main thread when executing long operations (file pro
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 Client Request
@@ -43,7 +43,7 @@ TaskService             → Business logic (submit, find, update status)
 
 ---
 
-## 🧵 Thread Pool Configuration
+##  Thread Pool Configuration
 
 | Parameter | Value | Description |
 |---|---|---|
@@ -57,7 +57,7 @@ TaskService             → Business logic (submit, find, update status)
 
 ---
 
-## 📦 Task Model
+##  Task Model
 
 ```
 Task {
@@ -82,7 +82,7 @@ SCRAPING        → HIGH   (medium ~10s)
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 - Java 17+
@@ -106,7 +106,7 @@ Password : (empty)
 
 ---
 
-## 📡 API Reference
+##  API Reference
 
 ### Task Endpoints
 
@@ -168,7 +168,7 @@ curl -X POST http://localhost:8080/api/tasks/submit \
 
 ---
 
-## 🗂️ Project Structure
+##  Project Structure
 
 ```
 src/main/java/com/tread/
@@ -214,7 +214,7 @@ src/main/java/com/tread/
 
 ---
 
-## 🔑 Key Concepts Demonstrated
+##  Key Concepts Demonstrated
 
 | Concept | Implementation |
 |---|---|
@@ -227,18 +227,7 @@ src/main/java/com/tread/
 
 ---
 
-## 🛣️ Roadmap
-
-- [ ] Priority-based queue (`PriorityBlockingQueue`)
-- [ ] Task retry mechanism on failure
-- [ ] Redis cache for task results
-- [ ] Spring Security with JWT
-- [ ] Actuator + Micrometer metrics
-- [ ] Docker support
-
----
-
-## 🔐 Spring Security + JWT
+##  Spring Security + JWT
 
 ### Flow d'authentification
 ```
@@ -279,3 +268,13 @@ curl -X GET http://localhost:8080/api/tasks \
 - ✅ Refresh Token valide 7 jours
 - ✅ API Stateless — pas de session serveur
 - ✅ SECRET_KEY dans application.properties
+
+  ##  Roadmap
+
+- [ ] Priority-based queue (`PriorityBlockingQueue`)
+- [ ] Task retry mechanism on failure
+- [ ] Redis cache for task results
+- [ ] Spring Security with JWT
+- [ ] Actuator + Micrometer metrics
+- [ ] Docker support
+

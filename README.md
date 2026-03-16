@@ -173,30 +173,41 @@ curl -X POST http://localhost:8080/api/tasks/submit \
 ```
 src/main/java/com/tread/
 ├── config/
-│   └── ThreadPoolConfig.java       # ThreadPool bean configuration
+│   ├── ThreadPoolConfig.java       # ThreadPool bean configuration
+│   ├── RedisConfig.java            # Redis cache configuration (TTL 10min/30s)
+│   └── SecurityConfig.java         # Spring Security + JWT rules
 ├── controller/
 │   ├── TaskController.java         # Task REST endpoints
-│   └── MonitorController.java      # Monitoring REST endpoints
+│   ├── MonitorController.java      # Monitoring REST endpoints
+│   └── AuthController.java         # Register + Login endpoints
 ├── dto/
 │   ├── TaskRequest.java            # Incoming task payload
 │   ├── ThreadPoolStatus.java       # Pool/stats response DTO
-│   └── ThreadInfo.java             # Active thread info DTO
+│   ├── ThreadInfo.java             # Active thread info DTO
+│   └── AuthRequest.java            # Login/Register payload
 ├── exception/
 │   └── TaskNotFoundException.java  # Custom exception
 ├── model/
-│   ├── Task.java                   # JPA entity
+│   ├── Task.java                   # JPA entity (Serializable for Redis)
+│   ├── User.java                   # JPA entity (implements UserDetails)
 │   └── enums/
 │       ├── TaskType.java           # EMAIL, FILE_PROCESSING, SCRAPING
 │       ├── TaskStatus.java         # PENDING, RUNNING, DONE, FAILED
-│       └── TaskPriority.java       # LOW, MEDIUM, HIGH
+│       ├── TaskPriority.java       # LOW, MEDIUM, HIGH
+│       └── Role.java               # USER, ADMIN
 ├── repository/
-│   └── TaskRepository.java         # Spring Data JPA
+│   ├── TaskRepository.java         # Spring Data JPA
+│   └── UserRepository.java         # findByUsername for Security
+├── security/
+│   ├── JwtService.java             # Generate + validate JWT tokens
+│   ├── JwtFilter.java              # Intercept + validate each request
+│   └── UserDetailsServiceImpl.java # Load user from DB for Security
 └── service/
     ├── TaskService.java            # Task service interface
     ├── ExecutorService.java        # Executor service interface
     ├── MonitoringService.java      # Monitoring service interface
     └── Impl/
-        ├── TaskServiceImpl.java
+        ├── TaskServiceImpl.java    # @Cacheable / @CacheEvict
         ├── ExecutorServiceImpl.java
         └── MonitoringServiceImpl.java
 ```
@@ -227,8 +238,44 @@ src/main/java/com/tread/
 
 ---
 
-## 👤 Author
+## 🔐 Spring Security + JWT
 
-Built as part of a hands-on **Backend & Scalable Systems** learning path.
+### Flow d'authentification
+```
+POST /api/auth/register → créer un compte
+POST /api/auth/login    → recevoir un token JWT
+Toutes les autres routes → token obligatoire
+```
 
-> *"Don't just learn threads — build systems that prove you understand them."*
+### Endpoints
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `POST` | `/api/auth/register` | Créer un compte | ❌ libre |
+| `POST` | `/api/auth/login` | Connexion → JWT | ❌ libre |
+| `POST` | `/api/tasks/submit` | Soumettre une tâche | ✅ token |
+| `GET` | `/api/tasks/{id}` | Consulter une tâche | ✅ token |
+| `GET` | `/api/monitor/**` | Monitoring | ✅ token |
+
+### Utilisation
+```bash
+# 1. Register
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username": "hajar", "password": "123456"}'
+
+# 2. Login → copie le token
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "hajar", "password": "123456"}'
+
+# 3. Utilise le token
+curl -X GET http://localhost:8080/api/tasks \
+  -H "Authorization: Bearer <token>"
+```
+
+### Sécurité
+- ✅ Mots de passe encodés BCrypt
+- ✅ Token JWT valide 1 heure
+- ✅ Refresh Token valide 7 jours
+- ✅ API Stateless — pas de session serveur
+- ✅ SECRET_KEY dans application.properties
